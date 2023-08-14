@@ -210,10 +210,10 @@ cin>>n;
 struct node*head=createlinkedlist(n);
 print(head);
 
-//cout<<"enter the node you want search"<<endl;
-//cin>>x;
+cout<<"enter the node you want search"<<endl;
+cin>>x;
 
-/*if(search(head,x))
+if(search(head,x))
 {
 cout<<"element is found"<<endl;
 }
@@ -231,7 +231,7 @@ head=insert(head,pos);
 print(head);
 
 
-*/
+
 
 cout<<"enter the pos at which you want to delete the node"<<endl;
 
