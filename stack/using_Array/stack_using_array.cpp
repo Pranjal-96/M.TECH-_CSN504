@@ -1,11 +1,11 @@
 #include <iostream>
 #include"array.h"
 int main() {
-    Array list;
+    Array arr;
    int operation;
 	int data;
 	while(1){
-	cout << "Select Operation To Perform on linked list" << endl;
+	cout << "Select Operation To Perform on array" << endl;
 	cout << "1.push" << endl;
 	cout << "2.top" << endl;
 	cout << "3.pop" << endl;
@@ -15,18 +15,18 @@ int main() {
 		case 1 : 
 		cout << "enter element to be inserted"<< endl;
 		cin >> data;
-		list.insert(data);
-		list.print();
+		arr.insert(data);
+		arr.print();
 		cout << endl;
 		break;
 		case 2: 
-		list.searchElement();
+		arr.searchElement();
 		
 		cout << endl;
 		break;
 		case 3:
-		list.deleteElement();
-		list.print();
+		arr.deleteElement();
+		arr.print();
 		cout << endl;
 		break;
 		case 4:
