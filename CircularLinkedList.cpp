@@ -1,107 +1,209 @@
 #include<iostream>
-
 using namespace std;
-template < typename T >
-    class Node {
-        public: T data;
-        Node * next;
-        Node * prev;
-        Node() {
-            data = 0;
-            next = NULL;
-            prev = NULL;
+
+int size_of_clist;
+template<typename T> class Nodec {
+    public:
+        T node_data;
+        Nodec *link;
+        Nodec(T data){
+            this->node_data = data;
+            this->link = NULL;
+            size_of_clist++;
+        }
+};
+
+template<typename T> class CircularList {
+    private:
+        Nodec<T> *head,*tail;
+    public:
+        CircularList(){
+            head = NULL;
+            tail = NULL;
         }
 
-        Node(T data) {
-            this -> data = data;
-            this -> next = NULL;
-            this -> prev = NULL;
-        }
-    };
-template < typename T >
-    class CircularLinkedList {
-        Node < T > * head;
-        public:
-            void insertionAtEnd(T data) {
-                Node < T > * newnode = new Node < T > (data);
-                if (head == NULL) {
-                    head = newnode;
-                    return;
-                }
-                Node < T > * temp = head;
-                while (temp -> next != NULL) {
-                    temp = temp -> next;
-                }
-                temp -> next = newnode;
-                newnode -> prev = temp;
-            }
-        void searchElement(T data) {
-            Node < T > * temp = head;
-            while (temp -> data != data && temp -> next != NULL)
-                temp = temp -> next;
-            if (temp -> data == data)
-                cout << "element present" << endl;
-            else
-                cout << "element not present" << endl;
+	~CircularList(){
+		free_memory();
+	}
 
+        void push_back(T data);
+        void push_front(T data);
+        void push_at_loc(int loc,T data);
+        void remove_front();
+        void remove_back();
+        void remove_at_loc(int loc);
+        void display_all();
+	bool find(T key);
+	void free_memory();
+};
+
+template<typename T> void CircularList<T> :: push_back(T data){
+    Nodec<T> *node = new Nodec<T>(data);
+    if(node == NULL){
+        cout<<"Heap is full !!!"<<endl;
+        return;
+    }
+    if(head == NULL){
+        head = node;
+        tail = node;
+        node->link = node;
+    }
+    else{
+        tail->link = node;
+        node->link = head;
+        tail = node;
+    }
+}
+
+template<typename T> void CircularList<T> :: push_front(T data){
+    if(head == NULL){
+        push_back(data);
+        return;
+    }else {
+        Nodec<T> *node = new Nodec<T>(data);
+        tail->link = node;
+        node->link = head;
+        head = node;
+    }
+}
+
+template<typename T> void CircularList<T> :: push_at_loc(int loc,T data){
+    if(size_of_clist < loc)
+        return;
+    else if(head == NULL && loc == 0){
+        push_back(data);
+        return;
+    }
+    else if(head != NULL && loc == 0){
+        push_front(data);
+        return;
+    }
+    else if(size_of_clist == loc){
+        push_back(data);
+        return;
+    }
+    else{
+        Nodec<T> *node = new Nodec<T>(data);
+        Nodec<T> *temp = head;
+
+        if(node == NULL){
+            cout<<"Heap is full !!!"<<endl;
+            return;
         }
-        void deleteElement(T data) {
-            Node < T > * temp = head;
-            Node < T > * previous = NULL;
-            while (temp -> data != data && temp -> next != NULL) {
-                previous = temp;
-                temp = temp -> next;
+        else{
+            int count = 0;
+            while(count < loc - 1){
+                temp = temp->link;
+                count++;
             }
-            if (previous == NULL)
-                head = head -> next;
-            else if (temp -> data == data)
-                previous -> next = temp -> next;
-            else
-                cout << "element not present" << endl;
-        }
-        void print() {
-            Node < T > * temp = head;
-            while (temp != NULL) {
-                cout << temp -> data << " ";
-                temp = temp -> next;
-            }
-        }
-    };
-int main() {
-    CircularLinkedList < int > list;
-    int operation;
-    int data;
-    while (1) {
-        cout << "Select Operation To Perform on linked list" << endl;
-        cout << "1.Insert" << endl;
-        cout << "2.Search" << endl;
-        cout << "3.Delete" << endl;
-        cout << "4. Exit" << endl;
-        cin >> operation;
-        switch (operation) {
-        case 1:
-            cout << "enter element to be inserted" << endl;
-            cin >> data;
-            list.insertionAtEnd(data);
-            list.print();
-            cout << endl;
-            break;
-        case 2:
-            cout << "enter element to be searched" << endl;
-            cin >> data;
-            list.searchElement(data);
-            list.print();
-            cout << endl;
-            break;
-        case 3:
-            cout << "enter element to be deleted" << endl;
-            cin >> data;
-            list.deleteElement(data);
-            list.print();
-            cout << endl;
-            break;
-        case 4:
-            return 0;
+            node->link = temp->link;
+            temp->link = node;
         }
     }
+}
+
+template<typename T> void CircularList<T> :: remove_front(){
+    if(head == NULL)
+        return;
+
+    Nodec<T> *temp = head;
+    head = temp->link;
+    tail->link = head;
+    delete temp;
+    temp = NULL;
+    size_of_clist--;
+
+    if(size_of_clist == 0){
+        head = NULL;
+        tail = NULL;
+    }
+} 
+
+template<typename T> void CircularList<T> :: remove_back(){
+    if(head == NULL)
+        return;
+
+    Nodec<T> *temp = head;
+    while(temp->link != tail){
+        temp = temp -> link;
+    }
+    Nodec<T> *lastNode = temp->link;
+    temp->link = head;
+    tail = temp;
+    delete lastNode;
+    lastNode = NULL;
+    size_of_clist--;
+
+    if(size_of_clist == 0){
+        head = NULL;
+        tail = NULL;
+    }
+}
+
+template<typename T> void CircularList<T> :: remove_at_loc(int loc){
+    if(loc >= size_of_clist)
+        return;
+
+    else if (head != NULL && loc == 0)
+        remove_front();
+
+    else if(size_of_clist == loc + 1)
+        remove_back();
+
+    else if(head == NULL){
+        cout<<" No data for delete"<<endl;
+        return;
+    }else{
+            Nodec<T> *temp = head;
+            int count = 0;
+            while(count < loc - 1){
+                temp = temp->link;
+                count++;
+            }
+            
+            Nodec<T> *deleting_node = temp->link;
+            temp->link = deleting_node->link;
+            size_of_clist--;
+            delete deleting_node;
+            deleting_node = NULL;
+
+            if(size_of_clist == 0){
+                head = NULL;
+                tail = NULL;
+            }
+        }
+} 
+
+template<typename T> void CircularList<T> :: display_all(){
+    Nodec<T>  *temp_head = head;
+    while(temp_head != tail){
+        cout<<temp_head->node_data<<" ";
+        temp_head = temp_head->link;
+    }
+    cout<<tail->node_data;
+    cout<<endl;
+}
+
+template<typename T> bool CircularList<T> :: find(T key){
+    Nodec<T> *temp = head;
+    while(temp != tail){
+        if(temp->node_data == key)
+            return true;
+        temp = temp->link;
+    }
+    if(tail->node_data == key)
+	    return true;
+    return false;
+}
+
+template<typename T> void CircularList<T> :: free_memory(){
+        Nodec<T> *temp = head;
+        while(temp != tail){
+                Nodec<T> *free_block = temp;
+                temp = temp->link;
+                delete free_block;
+                free_block = NULL;
+        }
+	delete tail;
+	tail = NULL;
 }
